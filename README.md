@@ -18,23 +18,21 @@ npm run preview
 
 The production output is `dist/`, suitable for a static web host. All pages use hash routes, so the host needs no special rewrite rules.
 
-## GitHub Pages
+## Deployment on Tencent EdgeOne Pages
 
-The included `.github/workflows/pages.yml` builds and deploys pushes to `main`. In the repository's Settings → Pages, select **GitHub Actions** as the build source. The workflow uses `/Anjnalocks-hardware/` as its base path, including local product images and PDF links.
+The site is deployed from this GitHub repository to EdgeOne Pages. Use:
 
-To validate the same build locally:
+- Install command: `npm ci`
+- Build command: `npm run build`
+- Output directory: `dist`
+- Production branch: `main`
 
-```sh
-npm run build -- --base /Anjnalocks-hardware/
-npm run preview
-```
-
-Open the preview server at `/Anjnalocks-hardware/` (including the trailing slash).
+Use the default root base path for EdgeOne. Product images, fonts, the wooden-door material and the original PDF are served locally. The obsolete GitHub Pages workflow has been removed so pushes use the selected EdgeOne deployment instead of triggering a second, unconfigured publisher.
 
 ## Included
 
 - Home, Our Story, Products, Catalogue and Contact pages.
-- A single door swings open from its left hinge on the first visit of each browser session. Skip button, Escape support, reduced-motion preference and footer replay control are included.
+- A framed walnut-look wooden door with brass accents, a turning handle and a warm light reveal swings open from its left edge on the first visit of each browser session. Skip button, Escape support, reduced-motion preference and footer replay control are included.
 - Search and category filters across 20 catalogue entries, product details dialogs and model-specific enquiry links.
 - Original downloadable 24-page catalogue and original catalogue product photos.
 - Interactive finish selector and separate Ellin bathroom collection.
@@ -46,8 +44,12 @@ Product codes, documented sizes, categories and company location come from the s
 
 Verified business phone, WhatsApp, email, full street address, team portraits and customer testimonials have not been supplied. The catalogue's designer credit is **not** used as a business contact. The contact form validates and copies an enquiry or downloads it as text; it does not send or store the message. Add a confirmed contact destination or backend before enabling direct submission.
 
-Google Fonts are optional; local system serif and sans-serif fallbacks work without external requests. Product assets and the catalogue are served locally.
+Manrope is self-hosted through the pinned `@fontsource-variable/manrope` package; the website does not request Google Fonts at runtime. Product assets and the catalogue are also served locally. Larger body text, visible product actions, six homepage category cards and featured category tabs make the collection easier to browse.
 
 ## Editing
 
-Product data, page content and interactions: `src/main.js`. Styling and door animation: `src/style.css`. Local product assets: `public/images/`. Original PDF: `public/Anjna-Ellin-Catalogue-2024.pdf`.
+Product data, page content and interactions: `src/main.js`. Shared component styles: `src/style.css`. Updated layout, typography and framed entrance animation: `src/redesign.css`. Local product assets: `public/images/`. Original PDF: `public/Anjna-Ellin-Catalogue-2024.pdf`.
+
+## Brand palette
+
+Primary green: `#9bc53d`. Main surfaces: `#fffdf7`, `#f5f1e6`, `#c9c4b4`. Text and contrast: `#1c1c19`, `#5c5a52`. Decorative gold: `#b8923a`. Product photographs and finish swatches retain their original colours. The timber grain is a local SVG material; no external texture requests are needed.
