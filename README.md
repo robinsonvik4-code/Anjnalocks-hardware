@@ -53,3 +53,9 @@ Product data, page content and interactions: `src/main.js`. Shared component sty
 ## Brand palette
 
 Primary green: `#9bc53d`. Main surfaces: `#fffdf7`, `#f5f1e6`, `#c9c4b4`. Text and contrast: `#1c1c19`, `#5c5a52`. Decorative gold: `#b8923a`. Product photographs and finish swatches retain their original colours. The timber grain is a local SVG material; no external texture requests are needed.
+
+## Motion and interaction
+
+The architectural homepage includes an interactive wooden door that reveals a working collection link, three hardware stories with native-scroll chapter highlighting, one-time staggered reveals, a large live finish specimen, product hover depth, route and filter transitions, sticky navigation and a reading progress line. `src/motion.js` scopes observers and listeners to each route and cleans them up when navigating. Animations use CSS transforms/opacity and native browser APIs; scrolling stays native. Touch devices omit pointer parallax, and reduced-motion preferences keep content immediately visible and the door controls functional.
+
+The display typeface is self-hosted DM Serif Display, paired with Manrope for navigation, labels and body text. Both are pinned dependencies, so the site makes no font requests to external services.

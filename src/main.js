@@ -1,6 +1,9 @@
 import "@fontsource-variable/manrope";
+import "@fontsource/dm-serif-display/latin-400.css";
+import "@fontsource/dm-serif-display/latin-400-italic.css";
 import "./style.css";
 import "./redesign.css";
+import { mountMotion, disposeMotion, animateCollection } from "./motion.js";
 
 const arrow =
   '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="1.5"/></svg>';
@@ -244,7 +247,7 @@ function button(text, href, light = false) {
 }
 function header(page) {
   return `<div class="announcement"><span>Agrawal Industries · Aligarh, India</span><a href="${catalogue}" download>Discover our catalogue ${download}</a></div>
-  <header class="site-header"><a class="brand" href="#/" aria-label="Anjna home">${logo}</a><nav class="desktop-nav" aria-label="Main navigation">${[
+  <header class="site-header"><div class="reading-progress" aria-hidden="true"></div><a class="brand" href="#/" aria-label="Anjna home">${logo}</a><nav class="desktop-nav" aria-label="Main navigation">${[
     ["home", "Home", "/"],
     ["about", "About us", "/about"],
     ["products", "Products", "/products"],
@@ -286,19 +289,26 @@ function home() {
     ["bathroom", "Bathroom accessories", "soap-102", "06"],
   ];
   return `
-    <section class="home-hero">
+    <section class="home-hero premium-hero">
       <div class="home-hero-copy">
-        <span class="eyebrow"><span class="green-rule"></span> ANJNA LOCKS & HARDWARE</span>
-        <h1>SECURE SPACES.<br><span>BEAUTIFUL DETAILS.</span></h1>
-        <p>Discover locks, handles and everyday hardware for your home or next project. Anjna, by Agrawal Industries, Aligarh.</p>
-        <div class="home-hero-actions">${button("Explore our products", "#/products")}<a class="button button-outline" href="${catalogue}" download>Download catalogue ${download}</a></div>
-        <a class="hero-category-link" href="#/products?category=aldrops">Discover our stainless steel aldrop range ${diagonal}</a>
+        <span class="eyebrow"><span class="green-rule"></span> ANJNA · LOCKS & HARDWARE</span>
+        <h1>A finer way<br>to come <em>home.</em></h1>
+        <p>The first touch. The familiar turn. Discover handles, locks and hardware that make a space your own.</p>
+        <div class="home-hero-actions">${button("Explore our products", "#/products")}<a class="hero-catalogue-link" href="${catalogue}" download>View catalogue ${diagonal}</a></div>
+        <div class="hero-origin"><span>01 — A WELCOME, RECONSIDERED</span><a href="#/about">Agrawal Industries · Aligarh ${diagonal}</a></div>
       </div>
-      <div class="home-hero-art">
-        ${image("hero-aldrop", "Anjna aldrop from the original hardware catalogue", 'fetchpriority="high" decoding="async"').replace('loading="lazy"', 'loading="eager"')}
-        <div class="hero-art-note"><span>ANJNA ORIGINALS</span><strong>Details that make a difference.</strong></div>
+      <div class="showcase-scene">
+        <div class="showcase-window" aria-hidden="true"></div><div class="showcase-floor" aria-hidden="true"></div>
+        <div class="showcase-architecture">
+          <div class="showcase-frame">
+            <div class="showcase-interior" id="hero-door-reveal" inert aria-hidden="true"><span class="eyebrow">THE ANJNA COLLECTION</span><h2>A detail.<br>A difference.</h2>${image("mortice-1002", "Anjna AI-1002 mortice handle")}<a href="#/products?category=mortice">Discover door handles ${arrow}</a></div>
+            <div class="showcase-leaf" aria-hidden="true"><span class="showcase-inlay inlay-top"></span><span class="showcase-inlay inlay-bottom"></span><span class="showcase-door-brand">Anjna<small>LOCKS & HARDWARE</small></span><div class="showcase-hardware"><i></i><span></span></div><span class="showcase-door-detail">THE ART IS IN THE DETAILS.</span></div>
+          </div>
+        </div>
+        <span class="showcase-scene-caption">WARM WOOD. CONSIDERED HARDWARE.</span>
+        <button class="showcase-toggle" aria-expanded="false" aria-controls="hero-door-reveal"><span>Open the door</span>${diagonal}</button>
       </div>
-      <span class="hero-background-word" aria-hidden="true">ANJNA</span>
+      <a class="hero-scroll-hint" href="#craft-details" aria-label="Scroll to discover the hardware details"><span>SCROLL TO DISCOVER</span><i></i></a>
     </section>
     <section class="range-overview" aria-label="Our collections">
       <a href="#/products?category=mortice"><span class="range-number">01</span><div><strong>Door & cabinet hardware</strong><span>Handles, aldrops and door kits</span></div>${diagonal}</a>
@@ -309,7 +319,11 @@ function home() {
       <div class="section-heading"><div><span class="eyebrow">EXPLORE THE RANGE</span><h2>Find the right <em>hardware.</em></h2></div><a class="quiet-link" href="#/products">All products ${arrow}</a></div>
       <div class="range-grid">${ranges.map(([id, label, photo, number]) => `<a class="range-card ${id === "aldrops" ? "range-card-dark" : ""}" href="#/products?category=${id}"><div class="range-card-image">${image(photo, label)}<span>${number}</span></div><div class="range-card-label"><h3>${label}</h3><span>${diagonal}</span></div></a>`).join("")}</div>
     </section>
-    <section class="home-about section"><div class="home-about-visual"><span class="about-monogram">A<span>®</span></span><div>${image("mortice-1001", "AI-1001 stainless steel mortice handle")}</div><span class="about-location">AGRAWAL INDUSTRIES<br>ALIGARH, INDIA</span></div><div class="home-about-copy"><span class="eyebrow">THE PEOPLE BEHIND THE DETAILS</span><h2>Hardware for every door.<br><em>Care in every detail.</em></h2><p>The right handle feels familiar. A well-chosen fitting brings a space together. We help you find those everyday essentials in one collection.</p><p>Based in Aligarh, Agrawal Industries brings together door handles, locks, cabinet fittings and hardware accessories. Our focus is quality products, reasonable rates and helpful customer service.</p><div class="about-highlights"><span>Door hardware</span><span>Cabinet fittings</span><span>Bathroom essentials</span></div>${button("More about Anjna", "#/about")}</div></section>
+    <section class="craft-story section" id="craft-details" aria-labelledby="craft-title">
+      <div class="craft-summary"><span class="eyebrow">SMALL DETAILS. A LASTING FEEL.</span><h2 id="craft-title">Good design<br>is something<br>you <em>feel.</em></h2><p>Hardware is part of the way you move through your home. Find the detail that feels right.</p><nav class="chapter-links" aria-label="Hardware stories"><a href="#craft-entrance" data-chapter-link="0" class="active" aria-current="step"><span>01</span> The first impression</a><a href="#craft-security" data-chapter-link="1"><span>02</span> The familiar turn</a><a href="#craft-finish" data-chapter-link="2"><span>03</span> The finishing touch</a></nav><span class="chapter-number" aria-hidden="true">01</span></div>
+      <div class="craft-scenes"><article class="craft-scene" id="craft-entrance" data-chapter="0"><div class="craft-product">${image("mortice-1001", "Anjna AI-1001 stainless steel mortice handle")}</div><div><span class="eyebrow">01 / THE FIRST IMPRESSION</span><h3>An invitation<br>to come in.</h3><p>Clean lines. A considered shape. Explore our stainless steel mortice handles.</p><a class="quiet-link" href="#/products?category=mortice">Explore handles ${arrow}</a></div></article><article class="craft-scene" id="craft-security" data-chapter="1"><div class="craft-product">${image("cupboard-lock", "Anjna cupboard lock with keys")}</div><div><span class="eyebrow">02 / THE FAMILIAR TURN</span><h3>A place for<br>what matters.</h3><p>Discover locks and latches for the doors and cupboards you use every day.</p><a class="quiet-link" href="#/products?category=locks">Discover locks ${arrow}</a></div></article><article class="craft-scene" id="craft-finish" data-chapter="2"><div class="craft-product">${image("cabinet-217", "Anjna AI-217 dual-tone cabinet handle")}</div><div><span class="eyebrow">03 / THE FINISHING TOUCH</span><h3>The little things.<br>Beautifully chosen.</h3><p>Give your cabinetry a considered finishing touch with the Anjna handle collection.</p><a class="quiet-link" href="#/products?category=cabinet">View cabinet handles ${arrow}</a></div></article></div>
+    </section>
+    <section class="brand-note section"><div><span class="eyebrow">ANJNA, BY AGRAWAL INDUSTRIES</span><span class="brand-note-origin">ALIGARH, INDIA</span></div><h2>For the spaces we live in.<br>For the details we <em>live with.</em></h2><a class="quiet-link" href="#/about">Our story ${diagonal}</a></section>
     <section class="section home-featured"><div class="section-heading"><div><span class="eyebrow">DISCOVER ANJNA</span><h2>Explore the <em>Anjna collection.</em></h2></div><a class="quiet-link" href="#/products">View the full collection ${arrow}</a></div><div class="featured-tabs" role="group" aria-label="Featured product categories">${[
       ["popular", "Featured products"],
       ["mortice", "Mortice handles"],
@@ -328,7 +342,7 @@ function home() {
     <section class="catalogue-banner section"><div class="catalogue-stack">${image("catalogue-cover", "Anjna Locks & Hardware catalogue cover")}</div><div><span class="eyebrow">YOUR COMPLETE PRODUCT GUIDE</span><h2>Every product.<br><em>One clear guide.</em></h2><p>Explore the full Anjna and Ellin range.<br>Product codes, sizes and finishes—all in one place.</p><a class="button" href="${catalogue}" download>Download catalogue ${download}</a><span class="file-note">2024 EDITION · PDF · 2.8 MB</span></div><span class="catalogue-bg-text" aria-hidden="true">ANJNA</span></section>`;
 }
 function finishSection() {
-  return `<section class="finishes-section section"><div class="section-heading"><div><span class="eyebrow">THE FINAL TOUCH</span><h2>A finish that <em>feels like you.</em></h2></div><p>From understated silver to warm antique tones.<br>Explore the finishes in our catalogue.</p></div><div class="finish-grid">${finishes.map(([name, cls], i) => `<button class="finish-item ${i === 0 ? "selected" : ""}" data-finish="${i}" aria-pressed="${i === 0}"><span class="finish-orb ${cls}"></span><span>${name}</span></button>`).join("")}</div><p class="finish-caption" aria-live="polite"><span>${finishes[0][0]}</span> — ${finishes[0][2]}</p><p class="finish-disclaimer">Finish availability varies by product. Enquire for available options.</p></section>`;
+  return `<section class="finishes-section section"><div class="section-heading"><div><span class="eyebrow">THE FINAL TOUCH</span><h2>A finish that <em>feels like you.</em></h2></div><p>From understated silver to warm antique tones.<br>Explore the finishes in our catalogue.</p></div><div class="finish-study"><div class="finish-study-label"><span class="eyebrow">A CLOSER LOOK</span><span>Choose your finishing touch.</span></div><div class="finish-specimen finish-orb brass" aria-hidden="true"></div><span class="finish-study-index" aria-hidden="true">MATERIAL / 01—06</span></div><div class="finish-grid">${finishes.map(([name, cls], i) => `<button class="finish-item ${i === 0 ? "selected" : ""}" data-finish="${i}" aria-pressed="${i === 0}"><span class="finish-orb ${cls}"></span><span>${name}</span></button>`).join("")}</div><p class="finish-caption" aria-live="polite"><span>${finishes[0][0]}</span> — ${finishes[0][2]}</p><p class="finish-disclaimer">Finish availability varies by product. Enquire for available options.</p></section>`;
 }
 function pageHeading(eyebrow, title, description) {
   return `<section class="page-heading section"><a class="breadcrumb" href="#/">Home <span>/</span></a><span class="eyebrow">${eyebrow}</span><h1>${title}</h1><p>${description}</p></section>`;
@@ -358,6 +372,7 @@ function renderProducts() {
   document.querySelector("#product-results").innerHTML = filtered.length
     ? filtered.map(productCard).join("")
     : `<div class="empty-state"><span>⌕</span><h2>No matching products</h2><p>Try a different model code or browse all categories.</p><button class="button reset-filters">Reset filters ${arrow}</button></div>`;
+  animateCollection(document.querySelector("#product-results"));
   document.querySelectorAll("[data-category]").forEach((b) => {
     b.classList.toggle("active", b.dataset.category === currentFilter);
     b.setAttribute("aria-pressed", b.dataset.category === currentFilter);
@@ -429,6 +444,7 @@ function closeProduct() {
   if (dialog?.open) dialog.close();
 }
 function render() {
+  disposeMotion();
   closeProduct();
   document.body.classList.remove("dialog-active");
   const raw = location.hash.slice(1) || "/";
@@ -472,6 +488,7 @@ function render() {
     if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
   });
   window.scrollTo({ top: 0, behavior: "instant" });
+  mountMotion(app);
 }
 function setupForm() {
   const form = document.querySelector("#enquiry-form");
@@ -582,7 +599,16 @@ document.addEventListener("click", (e) => {
   }
 });
 window.addEventListener("hashchange", () => {
-  if (location.hash === "#main-content") return;
+  if (
+    [
+      "#main-content",
+      "#craft-details",
+      "#craft-entrance",
+      "#craft-security",
+      "#craft-finish",
+    ].includes(location.hash)
+  )
+    return;
   render();
   document.querySelector("#main-content")?.focus({ preventScroll: true });
 });
@@ -607,10 +633,24 @@ document.addEventListener("click", (event) => {
     document.querySelector(".featured-grid").innerHTML = entries
       .map(productCard)
       .join("");
+    animateCollection(document.querySelector(".featured-grid"));
     document.querySelectorAll("[data-featured]").forEach((button) => {
       const active = button === tab;
       button.classList.toggle("active", active);
       button.setAttribute("aria-pressed", String(active));
     });
   }
+});
+
+document.addEventListener("click", (event) => {
+  const anchor = event.target.closest('a[href^="#craft-"]');
+  if (!anchor) return;
+  event.preventDefault();
+  const section = document.querySelector(anchor.getAttribute("href"));
+  section?.scrollIntoView({
+    behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "instant"
+      : "smooth",
+    block: "start",
+  });
 });
