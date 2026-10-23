@@ -2491,7 +2491,7 @@ h2 em {
   inset: 10px;
   transform-origin: left center;
   transform-style: preserve-3d;
-  backface-visibility: visible;
+  backface-visibility: hidden;
   background:
     linear-gradient(90deg, #24160d33, #fffdf708 45%, #24160d55),
     url("./assets/walnut-grain.svg") center/100% 100%;
@@ -2606,7 +2606,7 @@ h2 em {
   letter-spacing: 1.5px;
 }
 .showcase-scene.is-open .showcase-leaf {
-  transform: rotateY(-105deg);
+  transform: rotateY(-82deg);
 }
 .showcase-scene.is-open .showcase-hardware > span {
   transform: rotate(-14deg);
@@ -3470,7 +3470,7 @@ dialog {
     transform: none !important;
   }
   .showcase-scene.is-open .showcase-leaf {
-    transform: rotateY(-105deg) !important;
+    transform: rotateY(-82deg) !important;
   }
   .product-card:hover {
     transform: none;
