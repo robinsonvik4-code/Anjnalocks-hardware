@@ -126,7 +126,7 @@ export function mountMotion(root) {
       (event) => {
         if (media.matches) return;
         const card = event.target.closest(
-          ".range-card, .product-card, .showcase-scene",
+          ".range-card, .product-card, .hero-product-stage",
         );
         if (!card) return;
         const rect = card.getBoundingClientRect();
@@ -143,7 +143,7 @@ export function mountMotion(root) {
       "pointerout",
       (event) => {
         const card = event.target.closest(
-          ".range-card, .product-card, .showcase-scene",
+          ".range-card, .product-card, .hero-product-stage",
         );
         if (!card || card.contains(event.relatedTarget)) return;
         ["--pointer-x", "--pointer-y", "--tilt-x", "--tilt-y"].forEach((key) =>
@@ -154,19 +154,6 @@ export function mountMotion(root) {
     );
   }
 
-  const toggleDoor = (open) => {
-    const scene = root.querySelector(".showcase-scene");
-    if (!scene) return;
-    const button = scene.querySelector(".showcase-toggle");
-    const interior = scene.querySelector(".showcase-interior");
-    scene.classList.toggle("is-open", open);
-    button.setAttribute("aria-expanded", String(open));
-    button.querySelector("span").textContent = open
-      ? "Close the door"
-      : "Open the door";
-    interior.inert = !open;
-    interior.setAttribute("aria-hidden", String(!open));
-  };
   root.addEventListener(
     "click",
     (event) => {
@@ -176,8 +163,6 @@ export function mountMotion(root) {
         menu.style.top = `${root.querySelector(".site-header").getBoundingClientRect().bottom}px`;
         menu.style.zIndex = "70";
       }
-      const trigger = event.target.closest(".showcase-toggle");
-      if (trigger) toggleDoor(trigger.getAttribute("aria-expanded") !== "true");
       const finish = event.target.closest("[data-finish]");
       if (finish) {
         const specimen = root.querySelector(".finish-specimen");
@@ -196,21 +181,6 @@ export function mountMotion(root) {
               { duration: 500, easing: "ease-out" },
             );
         }
-      }
-    },
-    { signal },
-  );
-  root.addEventListener(
-    "keydown",
-    (event) => {
-      if (
-        event.key === "Escape" &&
-        root
-          .querySelector(".showcase-scene.is-open")
-          ?.contains(document.activeElement)
-      ) {
-        toggleDoor(false);
-        root.querySelector(".showcase-toggle")?.focus();
       }
     },
     { signal },

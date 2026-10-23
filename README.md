@@ -32,7 +32,7 @@ Use the default root base path for EdgeOne. Product images, fonts, the wooden-do
 ## Included
 
 - Home, Our Story, Products, Catalogue and Contact pages.
-- A framed walnut-look wooden door with brass accents, a turning handle and a warm light reveal swings open from its left edge on the first visit of each browser session. Skip button, Escape support, reduced-motion preference and footer replay control are included.
+- A single wooden door covers the entire homepage hero and swings open from its left edge. It uses a locally served photoreal walnut texture, champagne brass hardware, a turning handle and a light reveal. The automatic entrance runs once per browser session on the homepage. Skip, Escape, hero/footer replay and reduced-motion support are included; header navigation remains available throughout.
 - Search and category filters across 20 catalogue entries, product details dialogs and model-specific enquiry links.
 - Original downloadable 24-page catalogue and original catalogue product photos.
 - Interactive finish selector and separate Ellin bathroom collection.
@@ -48,14 +48,14 @@ Manrope is self-hosted through the pinned `@fontsource-variable/manrope` package
 
 ## Editing
 
-Product data, page content and interactions: `src/main.js`. Shared component styles: `src/style.css`. Updated layout, typography and framed entrance animation: `src/redesign.css`. Local product assets: `public/images/`. Original PDF: `public/Anjna-Ellin-Catalogue-2024.pdf`.
+Product data, page content and interactions: `src/main.js`. Shared component styles: `src/style.css`. Updated layout and typography: `src/redesign.css`. Full-hero entrance and product stage: `src/hero-door.css`. Local product assets: `public/images/`. Original PDF: `public/Anjna-Ellin-Catalogue-2024.pdf`.
 
 ## Brand palette
 
-Primary green: `#9bc53d`. Main surfaces: `#fffdf7`, `#f5f1e6`, `#c9c4b4`. Text and contrast: `#1c1c19`, `#5c5a52`. Decorative gold: `#b8923a`. Product photographs and finish swatches retain their original colours. The timber grain is a local SVG material; no external texture requests are needed.
+Primary green: `#9bc53d`. Main surfaces: `#fffdf7`, `#f5f1e6`, `#c9c4b4`. Text and contrast: `#1c1c19`, `#5c5a52`. Secondary deep forest: `#20382b`. Decorative gold: `#b8923a`; champagne: `#c8ac70`. Product photographs and finish swatches retain their original colours. The hero timber grain is an AI-generated photoreal walnut material, served locally as `src/assets/walnut-natural.webp`; it illustrates the entrance and does not represent a product photograph. No external texture requests are needed.
 
 ## Motion and interaction
 
-The architectural homepage includes an interactive wooden door that reveals a working collection link, three hardware stories with native-scroll chapter highlighting, one-time staggered reveals, a large live finish specimen, product hover depth, route and filter transitions, sticky navigation and a reading progress line. `src/motion.js` scopes observers and listeners to each route and cleans them up when navigating. Animations use CSS transforms/opacity and native browser APIs; scrolling stays native. Touch devices omit pointer parallax, and reduced-motion preferences keep content immediately visible and the door controls functional.
+The homepage includes a full-hero single-leaf door entrance and an original-catalogue product display, three hardware stories with native-scroll chapter highlighting, one-time staggered reveals, a large live finish specimen, product hover depth, route and filter transitions, sticky navigation and a reading progress line. `src/motion.js` scopes observers and listeners to each route and cleans them up when navigating. Animations use CSS transforms/opacity and native browser APIs; scrolling stays native. Touch devices omit pointer parallax, and reduced-motion preferences skip the entrance and keep content immediately visible. Entrance listeners and timers are disposed when navigating away; replay from another page returns to the homepage.
 
 The display typeface is self-hosted DM Serif Display, paired with Manrope for navigation, labels and body text. Both are pinned dependencies, so the site makes no font requests to external services.

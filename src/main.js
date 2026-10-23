@@ -3,6 +3,8 @@ import "@fontsource/dm-serif-display/latin-400.css";
 import "@fontsource/dm-serif-display/latin-400-italic.css";
 import "./style.css";
 import "./redesign.css";
+import "./hero-door.css";
+import walnutTexture from "./assets/walnut-natural.webp";
 import { mountMotion, disposeMotion, animateCollection } from "./motion.js";
 
 const arrow =
@@ -235,9 +237,11 @@ let query = "";
 let returnFocus = null;
 let introTimer;
 let revealTimer;
+let disposeIntro = () => {};
+let replayRequested = false;
 
 function image(name, alt, extra = "") {
-  return `<img src="${import.meta.env.BASE_URL}images/${name}.jpg" alt="${alt}" loading="lazy" ${extra}>`;
+  return `<img src="${import.meta.env.BASE_URL}images/${name}.jpg" alt="${alt}" ${extra.includes("loading=") ? "" : 'loading="lazy"'} ${extra}>`;
 }
 function categoryLabel(id) {
   return categories.find((c) => c.id === id)?.label || "";
@@ -297,16 +301,11 @@ function home() {
         <div class="home-hero-actions">${button("Explore our products", "#/products")}<a class="hero-catalogue-link" href="${catalogue}" download>View catalogue ${diagonal}</a></div>
         <div class="hero-origin"><span>01 — A WELCOME, RECONSIDERED</span><a href="#/about">Agrawal Industries · Aligarh ${diagonal}</a></div>
       </div>
-      <div class="showcase-scene">
-        <div class="showcase-window" aria-hidden="true"></div><div class="showcase-floor" aria-hidden="true"></div>
-        <div class="showcase-architecture">
-          <div class="showcase-frame">
-            <div class="showcase-interior" id="hero-door-reveal" inert aria-hidden="true"><span class="eyebrow">THE ANJNA COLLECTION</span><h2>A detail.<br>A difference.</h2>${image("mortice-1002", "Anjna AI-1002 mortice handle")}<a href="#/products?category=mortice">Discover door handles ${arrow}</a></div>
-            <div class="showcase-leaf" aria-hidden="true"><span class="showcase-inlay inlay-top"></span><span class="showcase-inlay inlay-bottom"></span><span class="showcase-door-brand">Anjna<small>LOCKS & HARDWARE</small></span><div class="showcase-hardware"><i></i><span></span></div><span class="showcase-door-detail">THE ART IS IN THE DETAILS.</span></div>
-          </div>
-        </div>
-        <span class="showcase-scene-caption">WARM WOOD. CONSIDERED HARDWARE.</span>
-        <button class="showcase-toggle" aria-expanded="false" aria-controls="hero-door-reveal"><span>Open the door</span>${diagonal}</button>
+      <div class="hero-product-stage">
+        <span class="hero-stage-index">THE ANJNA COLLECTION / 01</span>
+        <div class="hero-product-arch"><div class="hero-product-halo"></div>${image("mortice-1002", "Anjna AI-1002 mortice handle in the original catalogue", 'fetchpriority="high" loading="eager"')}</div>
+        <div class="hero-stage-label"><div><span>MORTICE HANDLES</span><strong>The first impression.</strong></div><a href="#/products?category=mortice" aria-label="Explore mortice handles">${diagonal}</a></div>
+        <button class="hero-replay replay-door">Replay the entrance ${arrow}</button>
       </div>
       <a class="hero-scroll-hint" href="#craft-details" aria-label="Scroll to discover the hardware details"><span>SCROLL TO DISCOVER</span><i></i></a>
     </section>
@@ -391,44 +390,68 @@ function setSession(key, value) {
   } catch {}
 }
 function openIntro(force = false) {
-  if (!force && readSession("anjna-entered-wood-v3")) return;
-  document.querySelector(".entrance")?.remove();
-  clearTimeout(introTimer);
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  setSession("anjna-entered-wood-v3", "1");
-  if (reduced) return;
+  const hero = document.querySelector(".premium-hero");
+  if (!hero || (!force && readSession("anjna-hero-door-v4"))) return;
+  disposeIntro();
+  clearTimeout(revealTimer);
+  hero.classList.remove("entrance-reveal");
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  setSession("anjna-hero-door-v4", "1");
+  const content = [...hero.children];
   const intro = document.createElement("div");
-  intro.className = "entrance";
-  intro.setAttribute("role", "dialog");
-  intro.setAttribute("aria-label", "Welcome to Anjna");
-  intro.setAttribute("aria-modal", "true");
-  intro.innerHTML = `<div class="entrance-room"><div class="entrance-floor-light"></div><div class="doorway"><div class="doorway-glow"></div><span class="door-hinge hinge-one"></span><span class="door-hinge hinge-two"></span><span class="door-hinge hinge-three"></span><div class="entrance-door"><div class="entrance-panel"></div><div class="door-inlay door-inlay-top"></div><div class="door-inlay door-inlay-bottom"></div><div class="intro-brand">${logo}<p>Every great space begins at the door.</p></div><div class="intro-hardware"><i></i><span></span></div><span class="entrance-bottom">AGRAWAL INDUSTRIES · ALIGARH</span></div></div></div><span class="entrance-welcome">WELCOME TO ANJNA</span><button class="skip-intro">Enter website ${arrow}</button>`;
-  document.body.append(intro);
-  document.querySelector("#app").inert = true;
-  document.body.classList.add("intro-active");
-  intro.querySelector("button").focus({ preventScroll: true });
-  const close = () => {
+  intro.className = "hero-entrance";
+  intro.setAttribute("role", "region");
+  intro.setAttribute("aria-label", "Wooden door entrance");
+  intro.innerHTML = `<div class="hero-door-leaf" aria-hidden="true"><div class="hero-door-moulding"></div><span class="hero-door-seam"></span><div class="hero-door-wordmark">${logo}<p>A warm welcome.<br>A lasting impression.</p></div><span class="hero-door-hinge hinge-upper"></span><span class="hero-door-hinge hinge-lower"></span><div class="hero-door-handle"><i></i><span></span><b></b></div><span class="hero-door-signature">AGRAWAL INDUSTRIES · ALIGARH</span></div><div class="hero-door-light" aria-hidden="true"></div><span class="hero-door-caption">EVERY GREAT SPACE BEGINS AT THE DOOR.</span><button class="hero-door-skip">Enter website ${arrow}</button>`;
+  const previousFocus = document.activeElement;
+  content.forEach((node) => { node.inert = true; });
+  hero.classList.add("hero-door-active");
+  hero.append(intro);
+  const controller = new AbortController();
+  // Automatic entrances leave navigation focus alone; explicit replay brings the door into view.
+  if (force) {
+    hero.scrollIntoView({ behavior: "instant", block: "start" });
+    intro.querySelector("button").focus({ preventScroll: true });
+  }
+  const close = (reveal = true) => {
+    const focusWasInside = intro.contains(document.activeElement);
     clearTimeout(introTimer);
+    controller.abort();
     intro.remove();
-    app.inert = false;
-    document.body.classList.remove("intro-active");
+    content.forEach((node) => { node.inert = false; });
+    hero.classList.remove("hero-door-active");
     clearTimeout(revealTimer);
-    app.classList.remove("entrance-reveal");
-    void app.offsetWidth;
-    app.classList.add("entrance-reveal");
-    revealTimer = setTimeout(
-      () => app.classList.remove("entrance-reveal"),
-      1200,
-    );
-    document.querySelector("#main-content")?.focus({ preventScroll: true });
+    hero.classList.remove("entrance-reveal");
+    if (reveal && hero.isConnected) {
+      hero.classList.add("entrance-reveal");
+      revealTimer = setTimeout(() => hero.classList.remove("entrance-reveal"), 1200);
+      if (focusWasInside) {
+        const target = previousFocus?.isConnected && hero.contains(previousFocus)
+          ? previousFocus : hero.querySelector(".home-hero-actions a");
+        target?.focus({ preventScroll: true });
+      }
+    }
+    disposeIntro = () => {};
   };
-  intro.querySelector("button").addEventListener("click", close);
-  intro.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") close();
-    if (e.key === "Tab") e.preventDefault();
-  });
-  requestAnimationFrame(() => intro.classList.add("intro-ready"));
-  introTimer = setTimeout(close, 3700);
+  disposeIntro = () => close(false);
+  intro.querySelector("button").addEventListener("click", () => close(), { signal: controller.signal });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") close();
+  }, { signal: controller.signal });
+  matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change", (event) => {
+    if (event.matches) close();
+  }, { signal: controller.signal });
+  const texture = new Image();
+  texture.src = walnutTexture;
+  const start = () => {
+    if (!intro.isConnected) return;
+    requestAnimationFrame(() => {
+      if (!intro.isConnected) return;
+      intro.classList.add("is-opening");
+      introTimer = setTimeout(() => close(), 4100);
+    });
+  };
+  texture.decode().catch(() => {}).then(start);
 }
 function openProduct(id) {
   const p = products.find((p) => p.id === id);
@@ -444,6 +467,7 @@ function closeProduct() {
   if (dialog?.open) dialog.close();
 }
 function render() {
+  disposeIntro();
   disposeMotion();
   closeProduct();
   document.body.classList.remove("dialog-active");
@@ -489,6 +513,10 @@ function render() {
   });
   window.scrollTo({ top: 0, behavior: "instant" });
   mountMotion(app);
+  if (replayRequested) {
+    replayRequested = false;
+    openIntro(true);
+  } else if (page === "home") openIntro();
 }
 function setupForm() {
   const form = document.querySelector("#enquiry-form");
@@ -576,7 +604,10 @@ document.addEventListener("click", (e) => {
     )
       closeProduct();
   }
-  if (e.target.closest(".replay-door")) openIntro(true);
+  if (e.target.closest(".replay-door")) {
+    if (document.querySelector(".premium-hero")) openIntro(true);
+    else { replayRequested = true; location.hash = "/"; }
+  }
 });
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
@@ -613,7 +644,6 @@ window.addEventListener("hashchange", () => {
   document.querySelector("#main-content")?.focus({ preventScroll: true });
 });
 render();
-openIntro();
 
 document.addEventListener("click", (event) => {
   if (event.target.closest(".skip-link")) {
